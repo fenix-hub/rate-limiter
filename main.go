@@ -26,8 +26,7 @@ type countRequest struct {
 var redisClient *redis.Client
 var namespace = "apikey:"
 
-func main() {
-
+func connectToRedis() {
     ctx := context.Background()
     redisClient = redis.NewClient(&redis.Options{
         Addr: os.Getenv("REDIS_HOST") + ":" +os.Getenv("REDIS_PORT"),
@@ -39,13 +38,18 @@ func main() {
         panic("could not connect to redis")
         return
     }
+}
+
+func main() {
+
+    connectToRedis()
 
     router := gin.Default()
     router.POST("/setup/:tokenId", setup)
     router.GET("/check/:tokenId", check)
     router.POST("/count/:tokenId", count)
 
-    router.Run("localhost:8080")
+    router.Run(":8080")
 }
 
 func check(c *gin.Context) {
